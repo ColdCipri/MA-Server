@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.902
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29519.181
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Android-Server", "Android-Server\Android-Server.csproj", "{8C11E0DC-E4D3-4D59-B3F1-F4D5D42EA3BA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RestAPI", "RestAPI\RestAPI.csproj", "{80DC01B7-9EEC-449A-92D0-0190CF998E9B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{8C11E0DC-E4D3-4D59-B3F1-F4D5D42EA3BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8C11E0DC-E4D3-4D59-B3F1-F4D5D42EA3BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8C11E0DC-E4D3-4D59-B3F1-F4D5D42EA3BA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{80DC01B7-9EEC-449A-92D0-0190CF998E9B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{80DC01B7-9EEC-449A-92D0-0190CF998E9B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{80DC01B7-9EEC-449A-92D0-0190CF998E9B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{80DC01B7-9EEC-449A-92D0-0190CF998E9B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

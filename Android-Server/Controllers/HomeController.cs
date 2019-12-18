@@ -14,5 +14,5 @@ namespace Android_Server.Controllers
 
             return View();
         }
-    }
+    }// ba smr eu de inteleg ce se intampla...
 }

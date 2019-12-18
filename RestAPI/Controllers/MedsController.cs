@@ -1,78 +1,79 @@
-﻿using Android_Server.Models;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
-using System.Web.Http;
-using System.Web.Http.Description;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using RestAPI.Models;
 
-namespace Android_Server.Controllers
+namespace RestAPI.Controllers
 {
-    public class MedsController : ApiController
+    [ApiController]
+    [Route("[controller]")]
+    public class MedsController : ControllerBase
     {
-        private SqlConnection _conn;
-        private SqlDataAdapter _adapter;
-        
-        // nu ii .net core... ii asp.net simplu 
-        // partea buna ii ca poti face asta:
-
-        // GET: api/Meds
-
-        [ResponseType(typeof(IEnumerable<Med>))]
+        [HttpGet()]
         public IEnumerable<Med> Get()
         {
-            _conn = new SqlConnection(Utils.Utils.GetConnectionString());
-            DataTable _dt = new DataTable();
+            //ba da ce-ti merge autosugest-u :)
+            using var _conn = new SqlConnection(Utils.Utils.GetConnectionString());
             var querySelect = Utils.Utils.getSelect();
-            _adapter = new SqlDataAdapter
+            _conn.Open();
+            using var cmd = new SqlCommand(querySelect, _conn);
+            using var reader = cmd.ExecuteReader();
+            List<Med> meds = new List<Med>();
+            while (reader.Read())
             {
-                SelectCommand = new SqlCommand(querySelect, _conn)
-            };
-            _adapter.Fill(_dt);
-            List<Med> meds = new List<Med>(_dt.Rows.Count);
-            if (_dt.Rows.Count > 0)
-            {
-                foreach(DataRow medsRecords in _dt.Rows)
-                {
-                    meds.Add(new ReadMed(medsRecords));
-                }
+                meds.Add(new ReadMed(reader));
             }
 
+
+
             return meds;
+
+
         }
         //ba ceva nu arata bine aic...
         //in postman merge?da oook.. ca io stiam altfel.
 
         // GET: api/Meds/5
+        [HttpGet("{id}")]
         public IEnumerable<Med> Get(int id)
         {
-            _conn = new SqlConnection(Utils.Utils.GetConnectionString());
-            DataTable _dt = new DataTable();
-            var querySelect = Utils.Utils.getSelectId() + id;
-            _adapter = new SqlDataAdapter
+            using (var _conn = new SqlConnection(Utils.Utils.GetConnectionString()))
             {
-                SelectCommand = new SqlCommand(querySelect, _conn)
-            };
-            _adapter.Fill(_dt);
-            List<Med> meds = new List<Med>(_dt.Rows.Count);
-            if (_dt.Rows.Count > 0)
-            {
-                foreach (DataRow medsRecords in _dt.Rows)
+                var querySelect = Utils.Utils.getSelectId() + id;
+                _conn.Open();
+                using (var cmd = new SqlCommand(querySelect, _conn))
                 {
-                    meds.Add(new ReadMed(medsRecords));
+                    using (var reader = cmd.ExecuteReader()) {
+
+                        List<Med> meds = new List<Med>();
+                        while (reader.Read())
+                        {
+                            meds.Add(new ReadMed(reader));
+                        }
+                        return meds;
+
+                    }
                 }
             }
+                
+           
+           
 
-            return meds;
         }
 
         // POST: api/Meds
+        [HttpPost()]
         public string Post([FromBody]CreateMed value)
         {
-            _conn = new SqlConnection(Utils.Utils.GetConnectionString());
+            using var _conn = new SqlConnection(Utils.Utils.GetConnectionString());
 
             var queryInsert = Utils.Utils.getInsert();
-            SqlCommand insertCommand = new SqlCommand(queryInsert, _conn);
+            using SqlCommand insertCommand = new SqlCommand(queryInsert, _conn);
 
             insertCommand.Parameters.AddWithValue("@name", value.name);
             insertCommand.Parameters.AddWithValue("@exp_date", value.exp_date);
@@ -90,9 +91,11 @@ namespace Android_Server.Controllers
         }
 
         // PUT: api/Meds/5
+        [HttpPut("{id}")]
+
         public string Put(int id, [FromBody]CreateMed value)
         {
-            _conn = new SqlConnection(Utils.Utils.GetConnectionString());
+            using var _conn = new SqlConnection(Utils.Utils.GetConnectionString());
 
             var queryUpdate = Utils.Utils.getUpdate() + id;
             SqlCommand updateCommand = new SqlCommand(queryUpdate, _conn);
@@ -113,9 +116,10 @@ namespace Android_Server.Controllers
         }
 
         // DELETE: api/Meds/5
+        [HttpDelete("{id}")]
         public string Delete(int id)
         {
-            _conn = new SqlConnection(Utils.Utils.GetConnectionString());
+            using var _conn = new SqlConnection(Utils.Utils.GetConnectionString());
 
             var queryDelete = Utils.Utils.getDelete() + id;
             SqlCommand deleteCommand = new SqlCommand(queryDelete, _conn);
