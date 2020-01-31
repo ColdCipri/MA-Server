@@ -31,7 +31,7 @@ namespace RestAPI.Controllers
         }
 
         // GET: api/Meds/5
-        [HttpGet("{id}")]
+        [HttpGet("{id:int}")]
         public IEnumerable<Med> Get(int id)
         {
             using (var _conn = new SqlConnection(Utils.QueryMed.GetConnectionString()))
@@ -42,6 +42,30 @@ namespace RestAPI.Controllers
                 {
                     using (var reader = cmd.ExecuteReader()) {
 
+                        List<Med> meds = new List<Med>();
+                        while (reader.Read())
+                        {
+                            meds.Add(new ReadMed(reader));
+                        }
+                        return meds;
+
+                    }
+                }
+            }
+        }
+
+        // GET: api/Meds/user
+        [HttpGet("{user}")]
+        public IEnumerable<Med> Get(string user)
+        {
+            using (var _conn = new SqlConnection(Utils.QueryMed.GetConnectionString()))
+            {
+                var querySelect = Utils.QueryMed.getSelectUser() + user + "'";
+                _conn.Open();
+                using (var cmd = new SqlCommand(querySelect, _conn))
+                {
+                    using (var reader = cmd.ExecuteReader())
+                    {
                         List<Med> meds = new List<Med>();
                         while (reader.Read())
                         {
