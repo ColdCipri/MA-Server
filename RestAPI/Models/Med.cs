@@ -16,6 +16,7 @@ namespace RestAPI.Models
         public string base_subst { get; set; }
         public string quantity { get; set; }
         public string description { get; set; }
+        public string userEmail { get; set; }
 
     }
 
@@ -35,6 +36,7 @@ namespace RestAPI.Models
             base_subst = row["base_subst"].ToString();
             quantity = row["quantity"].ToString();
             description = row["description"].ToString();
+            userEmail = row["userEmail"].ToString();
 
         }
     }

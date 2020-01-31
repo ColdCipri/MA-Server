@@ -1,75 +1,73 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using RestAPI.Models;
 
 namespace RestAPI.Controllers
 {
-    [ApiController]
     [Route("[controller]")]
-    public class MedsController : ControllerBase
+    [ApiController]
+    public class UsersController : ControllerBase
     {
         [HttpGet()]
-        public IEnumerable<Med> Get()
+        public IEnumerable<User> Get()
         {
             using var _conn = new SqlConnection(Utils.QueryMed.GetConnectionString());
-            var querySelect = Utils.QueryMed.getSelect();
+            var querySelect = Utils.QueryUser.getSelect();
             _conn.Open();
             using var cmd = new SqlCommand(querySelect, _conn);
             using var reader = cmd.ExecuteReader();
-            List<Med> meds = new List<Med>();
+            List<User> users = new List<User>();
             while (reader.Read())
             {
-                meds.Add(new ReadMed(reader));
+                users.Add(new ReadUser(reader));
             }
-            return meds;
+            return users;
         }
 
-        // GET: api/Meds/5
-        [HttpGet("{id}")]
-        public IEnumerable<Med> Get(int id)
+        // GET: api/Users/5
+        [HttpGet("{email}")]
+        public IEnumerable<User> Get(string email)
         {
             using (var _conn = new SqlConnection(Utils.QueryMed.GetConnectionString()))
             {
-                var querySelect = Utils.QueryMed.getSelectId() + id;
+                var querySelect = Utils.QueryUser.getSelectEmail() + email + "'";
                 _conn.Open();
                 using (var cmd = new SqlCommand(querySelect, _conn))
                 {
-                    using (var reader = cmd.ExecuteReader()) {
+                    using (var reader = cmd.ExecuteReader())
+                    {
 
-                        List<Med> meds = new List<Med>();
+                        List<User> users = new List<User>();
                         while (reader.Read())
                         {
-                            meds.Add(new ReadMed(reader));
+                            users.Add(new ReadUser(reader));
                         }
-                        return meds;
+                        return users;
 
                     }
                 }
             }
         }
 
-        // POST: api/Meds
+        // POST: api/Users
         [HttpPost()]
-        public string Post([FromBody]CreateMed value)
+        public string Post([FromBody]CreateUser value)
         {
             using var _conn = new SqlConnection(Utils.QueryMed.GetConnectionString());
 
-            var queryInsert = Utils.QueryMed.getInsert();
+            var queryInsert = Utils.QueryUser.getInsert();
             using SqlCommand insertCommand = new SqlCommand(queryInsert, _conn);
 
+            insertCommand.Parameters.AddWithValue("@email", value.email);
+            insertCommand.Parameters.AddWithValue("@password", value.password);
             insertCommand.Parameters.AddWithValue("@name", value.name);
-            insertCommand.Parameters.AddWithValue("@exp_date", value.exp_date);
-            insertCommand.Parameters.AddWithValue("@pieces", value.pieces);
-            insertCommand.Parameters.AddWithValue("@base_subst", value.base_subst);
-            insertCommand.Parameters.AddWithValue("@quantity", value.quantity);
-            insertCommand.Parameters.AddWithValue("@description", value.description);
-            insertCommand.Parameters.AddWithValue("@userEmail", value.userEmail);
+            insertCommand.Parameters.AddWithValue("@age", value.age);
+            insertCommand.Parameters.AddWithValue("@color", value.color);
 
             _conn.Open();
             int result = insertCommand.ExecuteNonQuery();
@@ -79,23 +77,21 @@ namespace RestAPI.Controllers
                 return "false";
         }
 
-        // PUT: api/Meds/5
-        [HttpPut("{id}")]
+        // PUT: api/Users/5
+        [HttpPut("{email}")]
 
-        public string Put(int id, [FromBody]CreateMed value)
+        public string Put(string email, [FromBody]CreateUser value)
         {
             using var _conn = new SqlConnection(Utils.QueryMed.GetConnectionString());
 
-            var queryUpdate = Utils.QueryMed.getUpdate() + id;
+            var queryUpdate = Utils.QueryUser.getUpdate() + email;
             SqlCommand updateCommand = new SqlCommand(queryUpdate, _conn);
 
+            updateCommand.Parameters.AddWithValue("@email", value.email);
+            updateCommand.Parameters.AddWithValue("@password", value.password);
             updateCommand.Parameters.AddWithValue("@name", value.name);
-            updateCommand.Parameters.AddWithValue("@exp_date", value.exp_date);
-            updateCommand.Parameters.AddWithValue("@pieces", value.pieces);
-            updateCommand.Parameters.AddWithValue("@base_subst", value.base_subst);
-            updateCommand.Parameters.AddWithValue("@quantity", value.quantity);
-            updateCommand.Parameters.AddWithValue("@description", value.description);
-            updateCommand.Parameters.AddWithValue("@userEmail", value.userEmail);
+            updateCommand.Parameters.AddWithValue("@age", value.age);
+            updateCommand.Parameters.AddWithValue("@color", value.color);
 
             _conn.Open();
             int result = updateCommand.ExecuteNonQuery();
@@ -105,13 +101,13 @@ namespace RestAPI.Controllers
                 return "false";
         }
 
-        // DELETE: api/Meds/5
-        [HttpDelete("{id}")]
-        public string Delete(int id)
+        // DELETE: api/Users/5
+        [HttpDelete("{email}")]
+        public string Delete(string email)
         {
             using var _conn = new SqlConnection(Utils.QueryMed.GetConnectionString());
 
-            var queryDelete = Utils.QueryMed.getDelete() + id;
+            var queryDelete = Utils.QueryUser.getDelete() + email;
             SqlCommand deleteCommand = new SqlCommand(queryDelete, _conn);
 
             _conn.Open();
